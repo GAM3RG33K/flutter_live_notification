@@ -17,7 +17,7 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   String _platformVersion = 'Unknown';
-  final _flutterLiveNotificationPlugin = FlutterLiveNotification();
+  final _flutterLiveNotificationPlugin = FlutterLiveNotification.getInstance();
 
   @override
   void initState() {
