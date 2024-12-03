@@ -1,21 +1,20 @@
 import 'package:flutter/foundation.dart';
-import 'package:flutter_live_notification/src/live_activity_manager.dart';
+import 'package:flutter_live_notification/src/live_notification_manager.dart';
+import 'src/manager/live_notification_event.dart';
+import 'src/manager/live_notification.dart';
 
-import 'flutter_live_notification_platform_interface.dart';
+export 'src/manager/live_notification_event.dart';
+export 'src/manager/live_notification.dart';
 
 class FlutterLiveNotification {
-  Future<String?> getPlatformVersion() {
-    return FlutterLiveNotificationPlatform.instance.getPlatformVersion();
-  }
-
-  final LiveActivityManager _liveActivityManager;
+  final LiveNotificationManager _liveNotificationManager;
   FlutterLiveNotification._(
-    this._liveActivityManager,
+    this._liveNotificationManager,
   );
 
   static final FlutterLiveNotification _singletonInstance =
       FlutterLiveNotification._(
-    LiveActivityManager.getInstanceForPlatform(),
+    LiveNotificationManager(),
   );
 
   static FlutterLiveNotification getInstance() {
@@ -30,28 +29,32 @@ class FlutterLiveNotification {
 
   static set debugMode(bool v) => _debugMode.value = v;
 
-  Future initialize({
+  Future<String?> getPlatformVersion() {
+    return _liveNotificationManager.getPlatformVersion();
+  }
+
+  Future<bool?> initialize({
     required String appIdPrefix,
     required String androidDefaultIcon,
   }) async {
-    return _liveActivityManager.initialize(
+    return _liveNotificationManager.initialize(
       appIdPrefix: appIdPrefix,
       androidDefaultIcon: androidDefaultIcon,
     );
   }
 
-  Future dispose() async {
-    return _liveActivityManager.dispose();
+  Future<bool?> dispose() async {
+    return _liveNotificationManager.dispose();
   }
 
-  Future<bool> get isServiceActive => _liveActivityManager.isServiceActive;
+  Future<bool> get isServiceActive => _liveNotificationManager.isServiceActive;
 
-  Future startService() async => _liveActivityManager.startService();
-  Future stopService() async => _liveActivityManager.stopService();
+  Future startService() async => _liveNotificationManager.startService();
+  Future stopService() async => _liveNotificationManager.stopService();
 
-  Stream<LiveActivityEvent> get liveActivityEventStream =>
-      _liveActivityManager.liveActivityEventStream;
+  Stream<LiveNotificationEvent> get liveNotificationEventStream =>
+      _liveNotificationManager.liveNotificationEventStream;
 
-  Future updateLiveActivity(LiveNotification notification) =>
-      _liveActivityManager.updateLiveActivity(notification);
+  Future updateLiveNotification(LiveNotification notification) =>
+      _liveNotificationManager.updateLiveNotification(notification);
 }

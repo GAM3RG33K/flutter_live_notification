@@ -1,0 +1,53 @@
+PODS:
+  - Flutter (1.0.0)
+  - flutter_app_group_directory (0.0.1):
+    - Flutter
+  - flutter_live_notification (0.0.1):
+    - Flutter
+  - flutter_local_notifications (0.0.1):
+    - Flutter
+  - integration_test (0.0.1):
+    - Flutter
+  - live_activities (0.0.1):
+    - Flutter
+  - path_provider_foundation (0.0.1):
+    - Flutter
+    - FlutterMacOS
+
+DEPENDENCIES:
+  - Flutter (from `Flutter`)
+  - flutter_app_group_directory (from `.symlinks/plugins/flutter_app_group_directory/ios`)
+  - flutter_live_notification (from `.symlinks/plugins/flutter_live_notification/ios`)
+  - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - integration_test (from `.symlinks/plugins/integration_test/ios`)
+  - live_activities (from `.symlinks/plugins/live_activities/ios`)
+  - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+
+EXTERNAL SOURCES:
+  Flutter:
+    :path: Flutter
+  flutter_app_group_directory:
+    :path: ".symlinks/plugins/flutter_app_group_directory/ios"
+  flutter_live_notification:
+    :path: ".symlinks/plugins/flutter_live_notification/ios"
+  flutter_local_notifications:
+    :path: ".symlinks/plugins/flutter_local_notifications/ios"
+  integration_test:
+    :path: ".symlinks/plugins/integration_test/ios"
+  live_activities:
+    :path: ".symlinks/plugins/live_activities/ios"
+  path_provider_foundation:
+    :path: ".symlinks/plugins/path_provider_foundation/darwin"
+
+SPEC CHECKSUMS:
+  Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
+  flutter_app_group_directory: dc15e00c34ca3b409c2dd25376f5b697be35db76
+  flutter_live_notification: 4525e703ae188b530a29469f3cf214df7032326b
+  flutter_local_notifications: df98d66e515e1ca797af436137b4459b160ad8c9
+  integration_test: 252f60fa39af5e17c3aa9899d35d908a0721b573
+  live_activities: 9ff56a06a2d43ecd68f56deeed13b18a8304789c
+  path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
+
+PODFILE CHECKSUM: 819463e6a0290f5a72f145ba7cde16e8b6ef0796
+
+COCOAPODS: 1.15.2
