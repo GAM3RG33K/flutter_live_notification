@@ -1,6 +1,7 @@
 import ActivityKit
 import Flutter
 import UIKit
+import UserNotifications
 
 public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
     public static func register(with registrar: FlutterPluginRegistrar) {
@@ -27,20 +28,6 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
             return
         }
 
-        guard let args = call.arguments as? [String: Any] else {
-            result(
-                FlutterError(
-                    code: "INVALID_ARGUMENTS",
-                    message: "Invalid arguments structure for createLiveNotification",
-                    details: nil))
-            return
-        }
-
-        // Extracting values from args dictionary
-        let id = args["id"] as? String ?? ""
-        let title = args["title"] as? String ?? ""
-        let message = args["message"] as? String ?? ""
-
         // Handle the methods
         switch call.method {
         case "getPlatformVersion":
@@ -49,7 +36,7 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
 
         case "initialize":
             NSLog("[handle] Initializing.")
-            initialize(result: result)
+            setup(result: result)
 
         case "dispose":
             NSLog("[handle] Disposing resources.")
@@ -64,6 +51,18 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
             stopService(result: result)
 
         case "createLiveNotification":
+            guard let args = call.arguments as? [String: Any] else {
+                result(
+                    FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid arguments structure for live notification",
+                        details: nil))
+                return
+            }
+
+            // Extracting values from args dictionary
+            let title = args["title"] as? String ?? ""
+            let message = args["message"] as? String ?? ""
             NSLog("[handle] Creating live notification.")
             if title.isEmpty || message.isEmpty {
                 NSLog("[handle] Invalid arguments for createLiveNotification. \(call.arguments)")
@@ -88,6 +87,19 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
             }
 
         case "updateLiveNotification":
+            guard let args = call.arguments as? [String: Any] else {
+                result(
+                    FlutterError(
+                        code: "INVALID_ARGUMENTS",
+                        message: "Invalid arguments structure for live notification",
+                        details: nil))
+                return
+            }
+
+            // Extracting values from args dictionary
+            let id = args["id"] as? String ?? ""
+            let title = args["title"] as? String ?? ""
+            let message = args["message"] as? String ?? ""
             if id.isEmpty || title.isEmpty || message.isEmpty {
 
                 NSLog("[handle] Invalid arguments for updateLiveNotification. \(call.arguments)")
@@ -120,9 +132,25 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
 
     }
 
+    private func requestNotificationAuthorization() {
+        NSLog("[requestNotificationAuthorization] requesting user permission to show notification")
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .badge, .sound]) { granted, error in
+            if granted {
+                NSLog("Notification permissions granted.")
+            } else {
+                NSLog("Notification permissions denied.")
+            }
+            if let error = error {
+                NSLog("Error requesting notification authorization: \(error.localizedDescription)")
+            }
+        }
+    }
+
     // MARK: - live notification Methods
-    private func initialize(result: @escaping FlutterResult) {
+    private func setup(result: @escaping FlutterResult) {
         NSLog("[initialize] Initializing resources.")
+        requestNotificationAuthorization()
         result(true)
     }
 
@@ -153,7 +181,7 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
         let initialContentState = LiveNotificationAttributes.LiveNotificationState(
             title: title, message: message)
 
-        // Creating the content for the liveNotification using LiveNotificationAttributes
+        // Creating the content for the live notification using LiveNotificationAttributes
         let attributes = LiveNotificationAttributes()  // Instantiate the attributes if required
         let liveNotificationContent = ActivityContent(state: initialContentState, staleDate: nil)
 

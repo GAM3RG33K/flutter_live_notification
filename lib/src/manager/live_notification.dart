@@ -29,4 +29,9 @@ class LiveNotification {
       'payload': payload,
     };
   }
+
+  @override
+  String toString() {
+    return "LiveNotification( title: $title, message: $message, payload: $payload,)";
+  }
 }
