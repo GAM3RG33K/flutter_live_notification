@@ -4,7 +4,7 @@ import 'live_notification.dart';
 enum LiveAcitivityEventType {
   create,
   update,
-  destroy,
+  dismiss,
 }
 
 class LiveNotificationEvent<T> {
@@ -33,10 +33,10 @@ class LiveNotificationEvent<T> {
     );
   }
 
-  factory LiveNotificationEvent.destroy(T? id, [LiveNotification? notification]) {
+  factory LiveNotificationEvent.dismiss(T? id, [LiveNotification? notification]) {
     return LiveNotificationEvent(
       id: id,
-      type: LiveAcitivityEventType.destroy,
+      type: LiveAcitivityEventType.dismiss,
       notification: notification,
     );
   }

@@ -13,12 +13,6 @@ class LiveNotificationManager<T> {
 
   final ValueNotifier<bool> isServiceActiveNotifier = ValueNotifier(false);
 
-  /// App ID Prefix used to create notification and Live notification channel identifiers
-  String? appIdPrefix;
-
-  // Android ONLY : Default icon name. i.e.: ic_launcher
-  String? defaultIcon;
-
   /// The LiveNotification notification id notifier
   final ValueNotifier<T?> _liveNotificationIdNotifier = ValueNotifier(null);
 
@@ -86,6 +80,8 @@ class LiveNotificationManager<T> {
     print(
         '[dispose] Disposing live notification manager and closing broadcast stream.');
     await liveNotificationEventBroadcast.close();
+
+    isServiceActiveNotifier.value = false;
     return methodChannel.invokeMethod<bool>('dispose');
   }
 
@@ -93,54 +89,19 @@ class LiveNotificationManager<T> {
   Future<bool?> initialize({
     required String appIdPrefix,
     required String androidDefaultIcon,
-    String? iOSUrlScheme,
   }) async {
-    print(
-        '[initialize] Initializing with appIdPrefix: $appIdPrefix, androidDefaultIcon: $androidDefaultIcon, iOSUrlScheme: $iOSUrlScheme');
+    print('[initialize] Initializing with appIdPrefix: $appIdPrefix');
 
-    this.appIdPrefix = appIdPrefix;
-    defaultIcon = androidDefaultIcon;
-
-    return methodChannel.invokeMethod<bool>('initialize');
+    isServiceActiveNotifier.value = true;
+    return methodChannel.invokeMethod<bool>('initialize', {
+      "appIdPrefix": appIdPrefix,
+      "androidDefaultIcon": androidDefaultIcon,
+    });
   }
 
   Map<String, dynamic> encodeData(LiveNotification model) {
     print('[encodeData] Encoding data for notification: ${model.toJson()}');
     return model.toJson();
-  }
-
-  @mustCallSuper
-  Future<bool?> startService() async {
-    print('[startService] Starting live notification service.');
-    assert(
-      appIdPrefix != null && appIdPrefix!.isNotEmpty,
-      'Must call initialize() before starting the live notification service',
-    );
-    isServiceActiveNotifier.value = true;
-
-    final response = await methodChannel.invokeMethod<bool>(
-      'startService',
-    );
-    print(
-        '[startService] Live notification service started with response: $response');
-    return response;
-  }
-
-  @mustCallSuper
-  Future<bool?> stopService() async {
-    print('[stopService] Stopping live notification service.');
-    logActivity(
-      liveNotificationId,
-      LiveAcitivityEventType.destroy,
-    );
-    isServiceActiveNotifier.value = false;
-
-    final response = await methodChannel.invokeMethod<bool>(
-      'stopService',
-    );
-    print(
-        '[stopService] Live notification service stopped with response: $response');
-    return response;
   }
 
   @mustCallSuper
@@ -209,4 +170,23 @@ class LiveNotificationManager<T> {
         '[createLiveNotification] Live notification created with response: $response');
     return response as T?;
   }
+
+  Future<T?> dismiss() async {
+    print(
+        '[dismiss] dismiss all running live notification(s)');
+
+    logActivity(
+      liveNotificationId,
+      LiveAcitivityEventType.dismiss,
+    );
+
+    final response = await methodChannel.invokeMethod<dynamic>(
+      'dismiss'
+    );
+
+    print(
+        '[dismiss] Live notification(s) dismissed');
+    return response as T?;
+  }
+  
 }

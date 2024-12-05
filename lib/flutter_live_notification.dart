@@ -49,12 +49,11 @@ class FlutterLiveNotification {
 
   Future<bool> get isServiceActive => _liveNotificationManager.isServiceActive;
 
-  Future startService() async => _liveNotificationManager.startService();
-  Future stopService() async => _liveNotificationManager.stopService();
-
   Stream<LiveNotificationEvent> get liveNotificationEventStream =>
       _liveNotificationManager.liveNotificationEventStream;
 
   Future updateLiveNotification(LiveNotification notification) =>
       _liveNotificationManager.updateLiveNotification(notification);
+  
+  Future dismiss() =>_liveNotificationManager.dismiss();
 }

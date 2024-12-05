@@ -42,14 +42,6 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
             NSLog("[handle] Disposing resources.")
             dispose(result: result)
 
-        case "startService":
-            NSLog("[handle] Starting service.")
-            startService(result: result)
-
-        case "stopService":
-            NSLog("[handle] Stopping service.")
-            stopService(result: result)
-
         case "createLiveNotification":
             guard let args = call.arguments as? [String: Any] else {
                 result(
@@ -125,6 +117,20 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
                         details: nil))
             }
 
+        case "dismiss":
+            if #available(iOS 16.2, *) {
+                dismiss(result: result)
+            } else {
+                NSLog(
+                    "[handle] Unsupported iOS version. Live Activities require iOS 16.2 or newer."
+                )
+                result(
+                    FlutterError(
+                        code: "UNSUPPORTED_VERSION",
+                        message: "Live Activities are only supported on iOS 16.2+",
+                        details: nil))
+            }
+
         default:
             NSLog("[handle] Method not implemented.")
             result(FlutterMethodNotImplemented)
@@ -156,16 +162,6 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
 
     private func dispose(result: @escaping FlutterResult) {
         NSLog("[dispose] Disposing resources.")
-        result(true)
-    }
-
-    private func startService(result: @escaping FlutterResult) {
-        NSLog("[startService] Starting service.")
-        result(true)
-    }
-
-    private func stopService(result: @escaping FlutterResult) {
-        NSLog("[stopService] Stopping service.")
         result(true)
     }
 
@@ -247,6 +243,42 @@ public class FlutterLiveNotificationPlugin: NSObject, FlutterPlugin {
                         code: "UPDATE_ACTIVITY_FAILED",
                         message: "Failed to update live notification",
                         details: error.localizedDescription))
+            }
+        }
+    }
+
+    @available(iOS 16.2, *)
+    private func dismiss(result: @escaping FlutterResult) {
+        NSLog("[dismiss] Dismissing all running live activities.")
+
+        // Fetch all active live activities for the app
+        let allActivities = Activity<LiveNotificationAttributes>.activities
+
+        if allActivities.isEmpty {
+            NSLog("[dismiss] No live activities found to dismiss.")
+            result(nil)
+            return
+        }
+
+        Task {
+            do {
+                for activity in allActivities {
+                    try await activity.end(dismissalPolicy: .immediate)
+                    NSLog(
+                        "[dismiss] Successfully dismissed live activity with ID: \(activity.id).")
+                }
+                result(nil)
+            } catch {
+                NSLog(
+                    "[dismiss] Failed to dismiss live activities: \(error.localizedDescription)"
+                )
+                result(
+                    FlutterError(
+                        code: "DISMISS_ACTIVITY_FAILED",
+                        message: "Failed to dismiss live activities",
+                        details: error.localizedDescription
+                    )
+                )
             }
         }
     }

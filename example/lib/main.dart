@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_live_notification/flutter_live_notification.dart';
+// import 'package:hmssdk_flutter/hmssdk_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -11,11 +12,38 @@ void main() async {
     appIdPrefix: 'com.example',
     androidDefaultIcon: 'ic_launcher',
   );
+  
+//   // setupPip();
 
   runApp(TimerApp(
     flutterLiveNotification: flutterLiveNotification,
   ));
 }
+
+// Future<void> setupPip() async {
+//   final isPipSetupSuccessful = await HMSIOSPIPController.setup(
+//       autoEnterPip: true, // Automatically enter PIP when minimized
+//       aspectRatio: [16, 9], // Set desired aspect ratio
+//       scaleType: ScaleType.SCALE_ASPECT_FILL, // Choose scaling type
+//       backgroundColor: Colors.black // Background color of PIP window
+//       );
+
+//   print('setupPip:  ${isPipSetupSuccessful?.toMap()}');
+// }
+
+// Future<void> enterPipMode() async {
+//   HMSIOSPIPController.start();
+//   final isPipEnteredSuccessfully = await HMSIOSPIPController.isActive();
+
+//   if (isPipEnteredSuccessfully is HMSException) {
+//     print("Failed with error: $isPipEnteredSuccessfully");
+//   }
+//   if (isPipEnteredSuccessfully) {
+//     print("Entered PIP mode successfully.");
+//   } else {
+//     print("Failed to enter PIP mode.");
+//   }
+// }
 
 // Time formatting utility
 String _formatTime(int seconds) {
@@ -85,12 +113,19 @@ class _TimerScreenState extends State<TimerScreen> {
     setState(() {
       _isRunning = false;
       _elapsedSeconds = 0;
+       widget.flutterLiveNotification.dismiss();
     });
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      floatingActionButton: FloatingActionButton(
+        onPressed: () { 
+          // enterPipMode();
+          },
+        child: const Icon(Icons.picture_in_picture),
+      ),
       appBar: AppBar(title: const Text('Cross-Platform Timer')),
       body: Center(
         child: Column(
